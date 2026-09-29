@@ -174,7 +174,11 @@ def build_facts(t: dict[str, pd.DataFrame]) -> dict:
         dom = dominance(t["laps"])
         dom.to_parquet(config.PROCESSED / "dominance.parquet", index=False)
         dry = dom[~dom.wet]
+        expected = set(range(2018, int(last.season) + 1))
+        have = set(t["laps"]["season"].unique())
         facts["dominance"] = {
+            "coverage_complete": expected <= have,
+            "seasons_missing": sorted(int(x) for x in expected - have),
             "races": int(len(dom)), "wet_races": int(dom.wet.sum()),
             "median_delta_pct_by_season": {int(k): round(float(v), 3)
                                            for k, v in dry.groupby("season").delta_pct.median().items()},
