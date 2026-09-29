@@ -1,7 +1,7 @@
 """Poster edition: "career stripes" — one vertical stripe per Grand Prix.
 
-Colour = finishing position on a sequential yellow→orange→deep-red ramp (P1
-brightest), not classified = neutral gray. Era labels underneath. Inspired by
+Colour = win in cream (the brightest stripe: wins "glow"), P2–P20 on a
+sequential yellow→orange→deep-red ramp, not classified = neutral gray. Era labels underneath. Inspired by
 Ed Hawkins' warming stripes: no axes, the shape of the career carries it.
 Output: output/static/poster_career_stripes.png (300 dpi) + a 1200×630 social card.
 """
@@ -20,7 +20,7 @@ from matplotlib.patches import Rectangle
 from src import config, features
 from src.charts.common import ERA_LABELS, gp_sequence
 
-BG, TEXT, MUTED, DNF = "#1d2021", "#ebdbb2", "#a89984", "#504945"
+BG, TEXT, MUTED, DNF, WIN = "#1d2021", "#ebdbb2", "#a89984", "#504945", "#fbf1c7"
 RAMP = LinearSegmentedColormap.from_list("stripes", ["#fabd2f", "#fe8019", "#d65d0e", "#9d0006", "#3c1a14"])
 
 
@@ -39,7 +39,9 @@ def _font() -> str:
 def colour(position: int, classified: bool) -> tuple:
     if not classified:
         return to_rgba(DNF)
-    return RAMP(min(position - 1, 19) / 19)
+    if position == 1:
+        return to_rgba(WIN)
+    return RAMP(min(position - 2, 18) / 18)
 
 
 def draw(width_in: float, height_in: float, *, social: bool = False) -> plt.Figure:
@@ -84,7 +86,7 @@ def draw(width_in: float, height_in: float, *, social: bool = False) -> plt.Figu
     lg.set_xlim(0, 22)
     lg.set_ylim(0, 1)
     lg.axis("off")
-    for x, s in [(0.5, "P1"), (9.5, "P10"), (19.5, "P20"), (21.5, "DNF")]:
+    for x, s in [(0.5, "win"), (9.5, "P10"), (19.5, "P20"), (21.5, "DNF")]:
         lg.text(x, -0.4, s, color=MUTED, ha="center", va="top", fontsize=8 if not social else 10)
     fig.text(0.95, 0.06, f"Data: Jolpica-F1 · to {cut.season} {cut.race_name} · Sarvesh Kant",
              color=MUTED, ha="right", fontsize=8 if not social else 10)
