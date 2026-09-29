@@ -57,6 +57,7 @@ def _result_rows(races: list[dict], list_key: str, session: str) -> list[dict]:
                 "driver_id": r["Driver"]["driverId"],
                 "driver_code": r["Driver"].get("code"),
                 "driver_name": f'{r["Driver"]["givenName"]} {r["Driver"]["familyName"]}',
+                "family_name": r["Driver"]["familyName"],
                 "number": int(r["number"]),
                 "constructor_id": r["Constructor"]["constructorId"],
                 "constructor": r["Constructor"]["name"],
