@@ -100,13 +100,18 @@ def build_laps_table(rounds: list[tuple[int, int]]) -> pd.DataFrame:
                 print(f"[{i}/{len(rounds)}] {season} R{rnd}: FAILED {e!r}", flush=True)
                 break
     pd.DataFrame(failures, columns=["season", "round", "error"]).to_csv(LAPS_DIR / "failures.csv", index=False)
+    table = combine()
+    table.to_parquet(config.PROCESSED / "laps_2018plus.parquet", index=False)
+    return table
+
+
+def combine() -> pd.DataFrame:
+    """All downloaded races in one table, with a wet-race flag (>10 % of laps on inters/wets)."""
     parts = [pd.read_parquet(p) for p in sorted(LAPS_DIR.glob("*.parquet"))]
     table = pd.concat(parts, ignore_index=True)
     wet = table.groupby(["season", "round"])["Compound"].agg(
         lambda c: c.isin(["INTERMEDIATE", "WET"]).mean() > 0.1).rename("wet_race")
-    table = table.join(wet, on=["season", "round"])
-    table.to_parquet(config.PROCESSED / "laps_2018plus.parquet", index=False)
-    return table
+    return table.join(wet, on=["season", "round"])
 
 
 if __name__ == "__main__":

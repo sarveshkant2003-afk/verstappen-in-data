@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 
 from src import config, stats
+from src.laps import LAPS_DIR, combine
 
 
 def load(name: str) -> pd.DataFrame:
@@ -21,8 +22,12 @@ def load_tables() -> dict[str, pd.DataFrame]:
     names = ["results", "field_results", "qualifying", "field_qualifying", "pole_gap", "standings",
              "official_standings", "win_margins", "career_greats"]
     t = {n: load(n) for n in names}
+    # The per-race cache is the source of truth when present (it may be ahead of the
+    # combined file while a download is running); a fresh clone uses the committed table.
     laps = config.PROCESSED / "laps_2018plus.parquet"
-    if laps.exists():
+    if any(LAPS_DIR.glob("*.parquet")):
+        t["laps"] = combine()
+    elif laps.exists():
         t["laps"] = pd.read_parquet(laps)
     return t
 
@@ -57,28 +62,37 @@ def teammate_summary(q: pd.DataFrame, results: pd.DataFrame) -> pd.DataFrame:
     return out.join(race).sort_values("first")
 
 
-def dominance(laps: pd.DataFrame) -> pd.DataFrame:
-    """Per race: Max's median clean-lap time vs the best other driver's, % (negative = faster).
+def dominance(laps: pd.DataFrame, min_overlap: float = 0.5, n_boot: int = 1000) -> pd.DataFrame:
+    """Per race: Max's lap-matched pace vs the closest other driver, % (negative = Max faster).
 
-    Dry races only get a CI; wet races are flagged. Needs ≥ 10 clean laps per driver.
+    For every other driver, take the clean laps both ran on the *same lap numbers*
+    (same fuel load and track state) and compute the median of per-lap % differences.
+    Only drivers sharing >= min_overlap of Max's clean laps count. The reference is
+    the driver Max gained least on (the largest delta) — "vs the fastest other driver".
+    CI: bootstrap over the paired laps against that driver.
     """
     clean = laps[laps["clean"] & laps["LapTime_s"].notna()]
     rows = []
     for (s, r), g in clean.groupby(["season", "round"]):
-        per = g.groupby("Driver")["LapTime_s"].agg(["median", "size"])
-        per = per[per["size"] >= 10]
-        if config.DRIVER_CODE not in per.index or len(per) < 2:
+        me = g[g.Driver == config.DRIVER_CODE].set_index("LapNumber")["LapTime_s"]
+        if len(me) < 10:
             continue
-        others = per.drop(config.DRIVER_CODE)
-        best = others["median"].idxmin()
-        mine = g[g.Driver == config.DRIVER_CODE]["LapTime_s"].to_numpy()
-        ref = g[g.Driver == best]["LapTime_s"].to_numpy()
-        rng = np.random.default_rng(s * 100 + r)
-        boots = [(np.median(rng.choice(mine, len(mine))) / np.median(rng.choice(ref, len(ref))) - 1) * 100
-                 for _ in range(1000)]
-        rows.append({"season": s, "round": r, "delta_pct": (per.loc[config.DRIVER_CODE, "median"] / others["median"].min() - 1) * 100,
-                     "ci_low": np.quantile(boots, 0.025), "ci_high": np.quantile(boots, 0.975),
-                     "best_other": best, "n_laps": len(mine), "wet": bool(g["wet_race"].iloc[0])})
+        cands = []
+        for drv, o in g[g.Driver != config.DRIVER_CODE].groupby("Driver"):
+            o = o.set_index("LapNumber")["LapTime_s"]
+            common = me.index.intersection(o.index)
+            if len(common) < min_overlap * len(me):
+                continue
+            diff = ((me[common] - o[common]) / o[common] * 100).to_numpy()
+            cands.append((float(np.median(diff)), drv, diff))
+        if not cands:
+            continue
+        delta, best, diff = max(cands, key=lambda c: c[0])
+        rng = np.random.default_rng(int(s) * 100 + int(r))
+        boots = np.median(rng.choice(diff, size=(n_boot, len(diff)), replace=True), axis=1)
+        rows.append({"season": s, "round": r, "delta_pct": delta, "ci_low": float(np.quantile(boots, 0.025)),
+                     "ci_high": float(np.quantile(boots, 0.975)), "best_other": best, "n_laps": len(diff),
+                     "wet": bool(g["wet_race"].iloc[0])})
     return pd.DataFrame(rows)
 
 
