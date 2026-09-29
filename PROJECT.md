@@ -518,28 +518,104 @@ compound colours follow the F1 convention with outlines so "hard" shows on light
 *(coming in Phase 4)*
 
 ## 9 · Interview prep
-*(built up throughout; completed in Phase 5)*
 
-Questions already answerable from this phase:
-1. **"How do you know your numbers are right?"** I reproduced the official starts, wins, podiums, titles and career
-   points exactly (3607.5, to the half point), and rebuilt standings match all 267 official driver-seasons. The one
-   difference, poles, I traced to seven specific races and explained.
-2. **"Why not just count pole positions?"** "Pole" has conflicting definitions (grid penalties, 2021 sprint rules).
-   I used a metric I can define exactly and documented the gap.
-3. **"How did you handle the API?"** Page-level cache, rate limiter, exponential backoff on 429, and refresh only for the live season.
-4. **"What would break when a new race is added?"** A new status string: the mapper raises on purpose.
-   Car-number changes: `verify_config` raises.
-5. **"Why is 2015–2017 missing from some charts?"** Live-timing data (laps, stints, telemetry) is only available from 2018.
+### The 60-second pitch
+> "An interviewer asked if I had a data-visualisation project, and I didn't, so I built one: a long-form data story
+> about Max Verstappen's career, called *33 → 1 → 3* after his three car numbers. It's in Python: Jolpica-F1 for
+> the results record since 2015, and FastF1 for lap timing and telemetry since 2018, drawn in Plotly with a theme
+> built from my website's CSS. The part I'm proudest of is the rigour. The pipeline reproduces his official starts,
+> wins, podiums, titles and career points exactly; every number in the text is computed into a facts file; and chart
+> titles are generated from the data and re-checked on every rebuild. Several findings contradict the popular
+> story: he lost the 2025 title by two points, his early teammates were as quick as him, and he has fewer wins per
+> start than Schumacher or Hamilton, but the best 50-race run of any of them. It's live on my site and refreshes
+> after every race."
+
+### Likely questions and model answers
+
+**Data and correctness**
+1. *How do you know your numbers are right?* An audit notebook compares totals with an independent source: starts,
+   wins, podiums, titles and career points match exactly, points to the half point. Rebuilt standings match all 267
+   official driver-seasons. The one mismatch, poles, is traced to seven specific races (§3.4).
+2. *Why not count poles?* Record-keepers disagree when a fastest qualifier takes a grid penalty, and 2021 sprint
+   weekends awarded pole to the sprint winner. I used "fastest qualifier", which I can define exactly.
+3. *Why does some data start in 2018?* FastF1 reads F1's live-timing archive, which has laps, stints and telemetry only from
+   2018. Results before that come from Jolpica.
+4. *What's the difference between Jolpica and FastF1?* Jolpica is a results database (who finished where, points,
+   status). FastF1 is timing data: every lap, tyres, track status, car telemetry.
+5. *How do you handle sprints?* Stored with a `session` flag and never counted as GP wins. A unit test enforces it.
+6. *What does "classified" mean and why does it matter?* A driver who covers enough of the distance gets a position
+   even if they retired. I use `positionText`, not `position`, because every car gets a numeric `position`.
+7. *What happens when a new race adds a status string you've never seen?* The mapper raises on purpose, so it can't
+   be silently miscategorised.
+8. *Retirement causes after 2024?* Jolpica records only "Retired", so the chart shows "cause not recorded" instead of guessing.
+
+**Statistics**
+9. *Why medians?* Lap times are right-skewed (traffic, yellow flags), and a median ignores those outliers.
+10. *Why percentages?* So gaps compare across circuits of different lengths.
+11. *How is race pace measured?* Lap-matched: laps both drivers ran cleanly on the same lap numbers, so fuel and track
+    state match. The per-lap % differences are summarised by their median, against the rival he beat by least (§4.4).
+12. *What's a clean lap?* Not lap 1, not an in- or out-lap, no safety car, VSC or red flag, not flagged inaccurate or deleted.
+13. *How did you get confidence intervals?* A percentile bootstrap over paired laps within each race, 1,000 resamples.
+    Its limitation: consecutive laps are correlated, so the CI is a bit narrow; a block bootstrap would fix that.
+14. *Isn't "vs the best other driver" biased?* Slightly: the maximum of ~19 noisy estimates favours "someone was
+    faster". It's the same in every season, so trends hold, and it makes "he was fastest" a conservative claim.
+15. *Why teammate comparison?* It's the only same-car comparison. Limits: it's only as good as the teammate, and
+    there are team dynamics (§4.5).
+16. *Why align telemetry by distance?* The same second is a different place on track for two laps; the same metre is
+    the same corner. I interpolate both laps onto one distance grid.
+17. *Why re-score points?* Points systems changed. Cross-season comparisons use one fixed system; within-season charts use official points.
+
+**Design**
+18. *Why not a dashboard?* A dashboard lets the reader ask questions; a story answers them. The spec is an article:
+    each chart has one finding in its title.
+19. *How did you choose colours?* From my site's CSS. Then I ran a palette validator: the site's blue failed the chroma
+    check (it reads as gray next to orange), so I re-stepped it until colour-blind separation and contrast passed in both themes.
+20. *Why one accent colour?* Highlight-and-gray: Max is always orange and everything else recedes, so the eye goes where the story is.
+21. *Tell me about a chart that didn't work.* Winning margin as the dominance measure: 2023, his most dominant year, had a
+    smaller median margin than 2021, because leaders manage gaps. I replaced it with lap-matched race pace. I also built
+    C14 (lap-1 gains) and cut it, because grid position explained most of it.
+22. *How do you avoid misleading charts?* A shared y-axis in small multiples, no dual axes, outliers pinned and
+    marked instead of silently clipped, and computed titles re-tested on every build.
+23. *Accessibility?* Meaning is never carried by colour alone (shapes for DNFs, outlines for "unknown", direct labels),
+    colour-blind-validated palettes, an aria-label and one-sentence takeaway per chart, and static PNG fallbacks.
+
+**Engineering**
+24. *How does it stay current?* `make refresh` re-fetches only the live season, downloads the new race's laps, re-runs
+    tests, rebuilds facts, charts, poster and README, and exports to the site.
+25. *How did you deal with rate limits?* A page-level cache for Jolpica with backoff on 429. For FastF1, a resumable
+    per-race loader that waits out its 500-calls-per-hour limit.
+26. *What bugs did you catch by looking at the output?* Missing shading from a Plotly subplot quirk, heatmap rows
+    dropped because years were parsed as numbers, a stale combined file hiding seasons, a wrong surname split, and a
+    sign error in the README's teammate numbers.
+
+**Comparison and next steps**
+27. *How is this different from your F1 Race Predictor?* The predictor is ML and looks forward: who wins next
+    Sunday? This is descriptive and looks back: what one career looked like, shown honestly. They share no code.
+28. *What would you do next?* A block bootstrap; tyre-age-matched pace; an animated race replay of the signature race;
+    scrollytelling for chapter 1; the same pipeline for any driver (the driver ID is one config value).
+
+### Limitations to admit upfront
+* Finishing position and even race pace mix **driver and car**. Only the teammate chart separates them, and only partly.
+* Race pace ignores tyre-age differences on the same lap, and traffic.
+* The bootstrap treats laps as independent.
+* Start counts for the older greats can differ by ±1 from some record books.
+* The 2026 chapter is a partial season and will change.
 
 ## 10 · Glossary
-*(started; completed in Phase 5)*
 * **Grand Prix (GP):** the main Sunday race of a weekend.
 * **Sprint:** a short Saturday race (2021+) with fewer points; not counted as a GP win.
-* **Qualifying (Q1/Q2/Q3):** knockout sessions that set the starting order; slowest cars drop out after Q1 and Q2.
+* **Qualifying (Q1/Q2/Q3):** knockout sessions that set the starting order; the slowest cars drop out after Q1 and Q2.
 * **Pole position:** starting first. See §3.4 for why this is ambiguous.
+* **Fastest qualifier:** P1 in qualifying, the metric this project uses instead of "pole".
 * **Grid penalty:** places a driver is moved back on the grid, e.g. for exceeding the engine-part allocation.
+* **Pit lane start:** starting from the pit exit after the field has gone (recorded as grid 0).
 * **Classified:** completed enough of the race distance to receive a finishing position, even if the car stopped.
 * **DNF / DNS / DSQ:** did not finish / did not start / disqualified.
 * **Safety car (SC) / Virtual safety car (VSC):** neutralised racing after an incident; laps under them are much slower.
+* **Red flag:** the session is stopped; cars return to the pit lane, and teams may change tyres.
 * **Stint / compound:** the run between pit stops / the tyre type (soft, medium, hard; intermediate and wet for rain).
+* **Undercut / overcut:** pitting earlier / later than a rival to gain position through fresher tyres or clear air.
 * **Teammate:** the other driver in the same team, i.e. the same car, so the fairest comparison of drivers.
+* **Telemetry:** car data sampled several times a second: speed, throttle, brake, gear, DRS, x/y position.
+* **DRS:** a flap on the rear wing that opens on straights to help overtaking.
+* **Constructors':** the team championship (not used here, which is about one driver).
