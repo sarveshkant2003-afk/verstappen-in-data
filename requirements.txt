@@ -1,0 +1,11 @@
+fastf1==3.8.3
+jupyter==1.1.1
+kaleido==1.4.0
+matplotlib==3.11.2
+numpy==2.5.3
+pandas==2.3.3
+plotly==7.1.0
+pyarrow==25.0.1
+pytest==9.1.1
+requests==2.34.2
+scipy==1.18.1
