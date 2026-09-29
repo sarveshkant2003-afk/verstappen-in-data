@@ -6,7 +6,7 @@ A visualization-first data story about one Formula 1 career, told through his th
 **#33** (the rise), **#1** (the reign) and **#3** (the 2026 reset). Every chart title states a finding the data
 supports; where the data contradicts a popular narrative, the chart says so.
 
-**→ Read the interactive case study:** https://sarveshkantonline.com/projects/verstappen-in-data.html *(publishing soon)*
+**→ Read the interactive case study:** https://sarveshkantonline.com/projects/verstappen-in-data.html
 
 This is a descriptive, editorial project: prose and charts read top to bottom, not a dashboard and not a model.
 (For forward-looking machine learning on F1, see my separate **F1 Race Predictor**.)
@@ -42,7 +42,7 @@ All charts are interactive on the case-study page (hover for every value) and co
 - **Qualifying gaps** use the last session both drivers set a time in, as % of the faster lap.
 - **Race pace** compares laps both drivers ran cleanly on the same lap numbers (lap 1, pit laps and safety-car laps
   excluded), with bootstrap confidence intervals; wet races are shown separately.
-- Full definitions and every edge case: [`PROJECT.md`](PROJECT.md).
+- The checks behind every number are in `notebooks/01_data_audit.ipynb`; the reasoning behind the charts is in `notebooks/02_eda.ipynb`.
 
 **Data cut-off:** 2026 Azerbaijan Grand Prix (round 15, 2026-09-26). The season is live; `make refresh`
 re-pulls data after each race and rebuilds every chart and this README.

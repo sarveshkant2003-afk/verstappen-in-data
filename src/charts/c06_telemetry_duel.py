@@ -1,4 +1,4 @@
-"""C06 · Telemetry duel — 2025 Japanese GP qualifying, Max vs Norris (chosen by Sarvesh).
+"""C06 · Telemetry duel — 2025 Japanese GP qualifying, Max vs Norris.
 
 Question: where on the lap was pole won and lost?
 Chart type: speed traces aligned by distance + a cumulative time-delta panel below.

@@ -4,3 +4,5 @@ data/cache/
 .DS_Store
 __pycache__/
 .pytest_cache/
+CLAUDE.md
+PROJECT.md

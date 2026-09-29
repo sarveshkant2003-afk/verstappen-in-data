@@ -185,6 +185,37 @@ def build_facts(t: dict[str, pd.DataFrame]) -> dict:
             "share_fastest_by_season": {int(k): round(float(v), 3)
                                         for k, v in dry.groupby("season").delta_pct.apply(lambda d: (d < 0).mean()).items()},
         }
+        # Same coverage rule as C07: a season counts if at least half its races have lap data.
+        races_by = gp[gp.season >= 2018].groupby("season").size()
+        cov = dom.groupby("season").size().reindex(races_by.index, fill_value=0) / races_by
+        covered = [int(x) for x in cov[cov >= 0.5].index]
+        dry_cov = dry[dry.season.isin(covered)]
+        facts["dominance"].update({
+            "covered_seasons": covered,
+            "covered_dry_races": int(len(dry_cov)),
+            "covered_dry_races_fastest": int((dry_cov.delta_pct < 0).sum()),
+        })
+
+    # retirements (C13): early years, the reign, and the live season
+    ret = gp[gp.status_cat.str.startswith("DNF")]
+    live = int(last.season)
+    facts["retirements"] = {
+        "to_2021": int((ret.season <= 2021).sum()), "seasons_to_2021": int(ret[ret.season <= 2021].season.nunique()),
+        "reign_2022_to_prev": int(((ret.season >= 2022) & (ret.season < live)).sum()),
+        "current_season": int((ret.season == live).sum()),
+    }
+
+    # signature race (C08), when its laps are available
+    sig = config.CACHE / "laps" / "2024_21.parquet"
+    if sig.exists():
+        sl = pd.read_parquet(sig)
+        me = sl[sl.Driver == config.DRIVER_CODE].sort_values("LapNumber")
+        row = gp[(gp.season == 2024) & (gp["round"] == 21)].iloc[0]
+        facts["signature_race"] = {
+            "race": race_label(row), "grid": int(row.grid), "finish": int(row.position),
+            "position_after_lap1": int(me.Position.iloc[0]), "lead_from_lap": int(me[me.Position == 1].LapNumber.min()),
+            "laps": int(me.LapNumber.max()), "compounds": sorted(me.Compound.dropna().unique().tolist()),
+        }
     return facts
 
 

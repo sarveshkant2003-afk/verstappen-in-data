@@ -17,7 +17,7 @@ from src.laps import load_session
 TEL_DIR = config.PROCESSED / "telemetry"
 MAX_POINTS = 1000
 
-# C06: chosen by Sarvesh (2026-09-29) from data-derived candidates.
+# C06: picked from data-derived candidates (closest poles against a title rival).
 DUEL = {"season": 2025, "round": 3, "session": "Q", "rival": "NOR"}
 
 

@@ -83,7 +83,7 @@ def build(tables: dict, mode: str = "dark") -> go.Figure:
                                  hoverinfo="skip"))
 
     # Coverage: seasons with lap data for under half their races are shown as a labelled gap, and the
-    # title only makes claims about covered races (Sarvesh chose not to download the rest, 2026-09-29).
+    # title only makes claims about covered races (the bulk download was stopped after 2018–20 and 2024–26).
     for s0, s1 in _runs(gaps):
         x0 = gp18[gp18.season == s0].i.min() - 0.5
         x1 = gp18[gp18.season == s1].i.max() + 0.5

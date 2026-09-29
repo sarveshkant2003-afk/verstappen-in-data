@@ -2,7 +2,8 @@
 
 c14_lap_one.py exists but is not registered: EDA showed lap-1 gains are mostly an
 artefact of grid position (from pole the best is 0), so it was cut from the story.
-C05/C06 are added once their telemetry sessions are downloaded.
+C05/C06 are written but not registered (their telemetry is not downloaded yet). Run
+`python -m src.telemetry`, then add them here.
 """
 from src.charts import (c01_every_race, c02_title_races, c03_teammate_gap, c04_grid_to_flag, c07_dominance, c08_signature_race, c09_reset,
                         c10_greats, c11_season_fingerprints, c12_world_map, c13_dnf_anatomy)

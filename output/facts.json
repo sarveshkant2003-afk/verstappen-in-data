@@ -408,6 +408,33 @@
       "2024": 0.143,
       "2025": 0.35,
       "2026": 0.0
-    }
+    },
+    "covered_seasons": [
+      2018,
+      2019,
+      2020,
+      2024,
+      2025,
+      2026
+    ],
+    "covered_dry_races": 95,
+    "covered_dry_races_fastest": 14
+  },
+  "retirements": {
+    "to_2021": 29,
+    "seasons_to_2021": 7,
+    "reign_2022_to_prev": 4,
+    "current_season": 4
+  },
+  "signature_race": {
+    "race": "2024 São Paulo GP",
+    "grid": 17,
+    "finish": 1,
+    "position_after_lap1": 11,
+    "lead_from_lap": 43,
+    "laps": 69,
+    "compounds": [
+      "INTERMEDIATE"
+    ]
   }
 }

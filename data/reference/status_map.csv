@@ -1,5 +1,5 @@
 # Jolpica status string -> category. Source: every distinct status in Jolpica 2015-2026 results/sprints.
-# Source URL: https://api.jolpi.ca/ergast/f1/ · as of 2026-09-29 · ambiguous rows reviewed and agreed by Sarvesh on 2026-09-29.
+# Source URL: https://api.jolpi.ca/ergast/f1/ · as of 2026-09-29 · ambiguous rows are judgement calls, noted in the third column.
 status,category,note
 Finished,Finished,
 Lapped,Lapped,
@@ -56,11 +56,11 @@ Collision damage,DNF-incident,
 Spun off,DNF-incident,
 Damage,DNF-incident,
 Debris,DNF-incident,
-Puncture,DNF-incident,"Agreed 2026-09-29: punctures are usually debris/contact, but can be tyre failure"
-Tyre,DNF-mechanical,Agreed 2026-09-29: tyre failure treated as equipment failure
-Front wing,DNF-incident,Agreed 2026-09-29: front-wing DNFs are almost always contact damage
-Undertray,DNF-mechanical,Agreed 2026-09-29: could be damage
-Out of fuel,DNF-other,"Agreed 2026-09-29: team/fuel-calculation error, neither mechanical nor incident"
+Puncture,DNF-incident,"judgement call: punctures are usually debris/contact, but can be tyre failure"
+Tyre,DNF-mechanical,judgement call: tyre failure treated as equipment failure
+Front wing,DNF-incident,judgement call: front-wing DNFs are almost always contact damage
+Undertray,DNF-mechanical,judgement call: could be damage
+Out of fuel,DNF-other,"judgement call: team/fuel-calculation error, neither mechanical nor incident"
 Retired,DNF-unknown,Jolpica uses a generic 'Retired' with no cause from 2024 onward
 Withdrew,DNS,
 Illness,DNS,driver did not take part

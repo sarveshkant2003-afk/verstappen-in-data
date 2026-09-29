@@ -1,4 +1,4 @@
-"""C08 · Anatomy of a signature race — 2024 São Paulo GP (chosen by Sarvesh).
+"""C08 · Anatomy of a signature race — 2024 São Paulo GP.
 
 Question: how did the race unfold, lap by lap?
 Chart type: position-by-lap ("bump") chart + tyre-stint strip, shared lap axis.
