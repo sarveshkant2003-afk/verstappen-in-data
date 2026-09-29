@@ -49,6 +49,8 @@ with the predictor repo, and make the difference obvious in README and website c
 - **2026-09-29 · Checkpoint answers.** Status-map REVIEW rows agreed. Poles → "fastest qualifier" everywhere.
   C08 signature race = 2024 São Paulo GP. Max's colour = orange (#e06a14 dark / #c8570c light).
   Website integration deferred until the charts are complete.
+  C06 duel = 2025 Japanese GP qualifying, Max vs Norris. C05 circuits chosen from data (six most-won since 2018).
+  C14 built and cut (lap-1 gains mostly reflect grid slot).
 - **2026-09-29 · Git.** Commit locally per milestone; create the GitHub remote and push at CHECKPOINT 1.
 
 ---
