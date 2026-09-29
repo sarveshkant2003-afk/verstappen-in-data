@@ -238,13 +238,13 @@ Rebuilt cumulative points match the official final standings for **all 267 drive
 under a local yellow, adds seconds, while nothing can make a lap seconds *faster*. A mean chases those outliers; a
 median ignores them. The same logic applies to season summaries (C09, C14 medians).
 
-**Percent, not seconds.** 0.2 s is a lot at Monaco (≈ 72 s laps) and less at Spa (≈ 106 s laps). Every gap is
+**Percent, not seconds.** 0.2 s means more on a short lap than on a long one. Every gap is
 divided by a reference lap time, so gaps are comparable across circuits and seasons:
 `gap % = 100 × (mine − reference) / reference`.
 
 **The lap-matched race-pace delta (C07, C09).** For each race and each rival:
 1. Take the laps **both** drivers completed cleanly, *on the same lap numbers*. Same lap number means the same fuel
-   load (cars burn ~1.5 kg a lap) and the same track state (rubber, temperature).
+   load (cars get lighter every lap) and the same track state (rubber, temperature).
 2. For each shared lap: `100 × (Max − rival) / rival`.
 3. The rival's number is the **median** of those per-lap differences.
 4. Only rivals sharing at least 50 % of Max's clean laps count (so a car that retired on lap 12 can't be "fastest").
@@ -499,8 +499,8 @@ when the reader toggles the theme. Recolouring a figure in the browser would mea
 
 The site's own blues (`#83a598`, `#076678`) **failed the palette validator**: chroma too low, so they read as gray
 next to orange. The orange was also too light for the dark background's lightness band. Both were adjusted within
-their hue families until the validator passed the lightness, chroma, colour-blind separation (ΔE ≥ 13 under
-protanopia) and contrast checks in *both* modes. *Interview line:* "I didn't eyeball colour-blind safety; I computed it."
+their hue families until the validator passed the lightness, chroma, colour-blind separation (worst pair ΔE 21.9 dark / 18.3 light
+under simulated protanopia; the target is ≥ 8) and contrast checks in *both* modes. *Interview line:* "I didn't eyeball colour-blind safety; I computed it."
 
 **Other rules applied everywhere:** declarative titles (the finding) with a subtitle saying how to read the chart; a
 source line on every chart; direct labels over legends; one y-axis only; no pie charts, 3D or rainbow scales; the
