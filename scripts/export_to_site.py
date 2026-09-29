@@ -19,6 +19,8 @@ from src import config  # noqa: E402
 from src.charts import REGISTRY  # noqa: E402
 
 WIDTH = 1400
+# Charts used on the website write-up (projects/verstappen-in-data.html).
+ON_PAGE = ["c01", "c02", "c03", "c07", "c08", "c09", "c10"]
 
 
 def _resize(src: Path, dst: Path) -> None:
@@ -34,7 +36,7 @@ def export(site: Path) -> list[Path]:
     dest = site / "assets" / "verstappen-in-data"
     dest.mkdir(parents=True, exist_ok=True)
     copied = []
-    for cid in REGISTRY:
+    for cid in [c for c in ON_PAGE if c in REGISTRY]:
         src = config.STATIC_OUT / f"{cid}_light.png"
         if src.exists():
             _resize(src, dest / f"{cid}.png")
