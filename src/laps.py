@@ -53,10 +53,56 @@ def availability(year: int, round_: int, kind: str = "R") -> dict:
 
 
 def race_laps(session: fastf1.core.Session) -> pd.DataFrame:
-    """Tidy per-lap table for every driver: position, compound, stint, pit flags, track status."""
-    cols = ["Driver", "LapNumber", "Position", "LapTime", "Compound", "Stint", "TyreLife",
-            "PitInTime", "PitOutTime", "TrackStatus"]
-    df = session.laps[cols].copy()
-    df["LapTime_s"] = df["LapTime"].dt.total_seconds()
-    df["pit_in"] = df["PitInTime"].notna()
-    return df.drop(columns=["LapTime", "PitInTime", "PitOutTime"])
+    """Tidy per-lap table for every driver: position, compound, stint, pit flags, track status, clean flag."""
+    laps = session.laps
+    clean_idx = stats.clean_laps(laps).index
+    cols = ["Driver", "LapNumber", "Position", "Compound", "Stint", "TyreLife", "TrackStatus"]
+    df = laps[cols].copy()
+    df["LapTime_s"] = laps["LapTime"].dt.total_seconds()
+    df["pit_in"] = laps["PitInTime"].notna()
+    df["pit_out"] = laps["PitOutTime"].notna()
+    df["clean"] = df.index.isin(clean_idx)
+    return df.reset_index(drop=True)
+
+
+LAPS_DIR = config.CACHE / "laps"
+
+
+def build_laps_table(rounds: list[tuple[int, int]]) -> pd.DataFrame:
+    """Download (resumably) every race's laps and combine into laps_2018plus.parquet.
+
+    Each race is saved to data/cache/laps/<season>_<round>.parquet as soon as it
+    loads, so an interrupted run (e.g. an API rate limit) resumes where it stopped.
+    Failures are listed in data/cache/laps/failures.csv for the audit.
+    """
+    LAPS_DIR.mkdir(parents=True, exist_ok=True)
+    failures = []
+    for i, (season, rnd) in enumerate(rounds, 1):
+        out = LAPS_DIR / f"{season}_{rnd:02d}.parquet"
+        if out.exists():
+            continue
+        try:
+            df = race_laps(load_session(season, rnd, "R"))
+            df.insert(0, "season", season)
+            df.insert(1, "round", rnd)
+            df.to_parquet(out, index=False)
+            print(f"[{i}/{len(rounds)}] {season} R{rnd}: {len(df)} laps", flush=True)
+        except Exception as e:
+            failures.append({"season": season, "round": rnd, "error": repr(e)[:300]})
+            print(f"[{i}/{len(rounds)}] {season} R{rnd}: FAILED {e!r}", flush=True)
+    pd.DataFrame(failures, columns=["season", "round", "error"]).to_csv(LAPS_DIR / "failures.csv", index=False)
+    parts = [pd.read_parquet(p) for p in sorted(LAPS_DIR.glob("*.parquet"))]
+    table = pd.concat(parts, ignore_index=True)
+    wet = table.groupby(["season", "round"])["Compound"].agg(
+        lambda c: c.isin(["INTERMEDIATE", "WET"]).mean() > 0.1).rename("wet_race")
+    table = table.join(wet, on=["season", "round"])
+    table.to_parquet(config.PROCESSED / "laps_2018plus.parquet", index=False)
+    return table
+
+
+if __name__ == "__main__":
+    res = pd.read_parquet(config.PROCESSED / "results.parquet")
+    gp = res[(res["session"] == "gp") & (res["season"] >= 2018)]
+    rounds = list(gp[["season", "round"]].drop_duplicates().itertuples(index=False, name=None))
+    t = build_laps_table(rounds)
+    print(t.shape, "races:", t.groupby(["season", "round"]).ngroups)

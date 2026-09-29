@@ -135,8 +135,15 @@ def greats_results() -> pd.DataFrame:
                 "date": pd.Timestamp(race["date"]),
                 "position_text": r["positionText"],
                 "position": int(r["position"]),
+                "status": r["status"],
             })
     df = pd.DataFrame(rows).sort_values(["driver_id", "date"]).reset_index(drop=True)
+    # A start excludes did-not-start entries and (pre-2000s) failures to qualify/pre-qualify.
+    status_map = pd.read_csv(config.REFERENCE / "status_map.csv", comment="#")
+    lookup = dict(zip(status_map["status"], status_map["category"]))
+    dns = df["status"].map(lookup).eq("DNS") | df["position_text"].isin(["F", "W"]) \
+        | df["status"].str.contains("qualify", case=False)
+    df = df[~dns].reset_index(drop=True)
     df["start_n"] = df.groupby("driver_id").cumcount() + 1
     df["is_win"] = df["position_text"] == "1"
     df["wins_cum"] = df.groupby("driver_id")["is_win"].cumsum()

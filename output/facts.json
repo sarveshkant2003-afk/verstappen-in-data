@@ -1,0 +1,386 @@
+{
+  "data_cutoff": {
+    "season": 2026,
+    "round": 15,
+    "race": "Azerbaijan Grand Prix",
+    "date": "2026-09-26"
+  },
+  "career": {
+    "starts": 248,
+    "wins": 71,
+    "podiums": 134,
+    "fastest_qualifier": 51,
+    "points": 3607.5,
+    "sprints": 29,
+    "sprint_wins": 13,
+    "titles": 4,
+    "title_seasons": [
+      2021,
+      2022,
+      2023,
+      2024
+    ],
+    "win_pct": 28.6
+  },
+  "eras": {
+    "33": [
+      2015,
+      2021
+    ],
+    "1": [
+      2022,
+      2025
+    ],
+    "3": [
+      2026,
+      2026
+    ]
+  },
+  "debut": {
+    "race": "2015 Australian GP",
+    "team": "Toro Rosso",
+    "number": 33
+  },
+  "first_win": {
+    "race": "2016 Spanish GP",
+    "grid": 4,
+    "team": "Red Bull"
+  },
+  "by_season": {
+    "2015": {
+      "starts": 19,
+      "wins": 0,
+      "podiums": 0,
+      "not_classified": 4,
+      "fastest_qualifier": 0,
+      "win_pct": 0.0
+    },
+    "2016": {
+      "starts": 21,
+      "wins": 1,
+      "podiums": 7,
+      "not_classified": 3,
+      "fastest_qualifier": 0,
+      "win_pct": 4.8
+    },
+    "2017": {
+      "starts": 20,
+      "wins": 2,
+      "podiums": 4,
+      "not_classified": 7,
+      "fastest_qualifier": 0,
+      "win_pct": 10.0
+    },
+    "2018": {
+      "starts": 21,
+      "wins": 2,
+      "podiums": 11,
+      "not_classified": 4,
+      "fastest_qualifier": 0,
+      "win_pct": 9.5
+    },
+    "2019": {
+      "starts": 21,
+      "wins": 3,
+      "podiums": 9,
+      "not_classified": 2,
+      "fastest_qualifier": 3,
+      "win_pct": 14.3
+    },
+    "2020": {
+      "starts": 17,
+      "wins": 2,
+      "podiums": 11,
+      "not_classified": 5,
+      "fastest_qualifier": 1,
+      "win_pct": 11.8
+    },
+    "2021": {
+      "starts": 22,
+      "wins": 10,
+      "podiums": 18,
+      "not_classified": 3,
+      "fastest_qualifier": 8,
+      "win_pct": 45.5
+    },
+    "2022": {
+      "starts": 22,
+      "wins": 15,
+      "podiums": 17,
+      "not_classified": 1,
+      "fastest_qualifier": 8,
+      "win_pct": 68.2
+    },
+    "2023": {
+      "starts": 22,
+      "wins": 19,
+      "podiums": 21,
+      "not_classified": 0,
+      "fastest_qualifier": 13,
+      "win_pct": 86.4
+    },
+    "2024": {
+      "starts": 24,
+      "wins": 9,
+      "podiums": 14,
+      "not_classified": 1,
+      "fastest_qualifier": 10,
+      "win_pct": 37.5
+    },
+    "2025": {
+      "starts": 24,
+      "wins": 8,
+      "podiums": 15,
+      "not_classified": 1,
+      "fastest_qualifier": 8,
+      "win_pct": 33.3
+    },
+    "2026": {
+      "starts": 15,
+      "wins": 0,
+      "podiums": 7,
+      "not_classified": 3,
+      "fastest_qualifier": 0,
+      "win_pct": 0.0
+    }
+  },
+  "title_fights": {
+    "2015": {
+      "final_gap": -332.0,
+      "best_rival": "hamilton",
+      "rounds_leading": 0,
+      "rounds": 19
+    },
+    "2016": {
+      "final_gap": -181.0,
+      "best_rival": "rosberg",
+      "rounds_leading": 0,
+      "rounds": 21
+    },
+    "2017": {
+      "final_gap": -195.0,
+      "best_rival": "hamilton",
+      "rounds_leading": 0,
+      "rounds": 20
+    },
+    "2018": {
+      "final_gap": -159.0,
+      "best_rival": "hamilton",
+      "rounds_leading": 0,
+      "rounds": 21
+    },
+    "2019": {
+      "final_gap": -135.0,
+      "best_rival": "hamilton",
+      "rounds_leading": 0,
+      "rounds": 21
+    },
+    "2020": {
+      "final_gap": -133.0,
+      "best_rival": "hamilton",
+      "rounds_leading": 0,
+      "rounds": 17
+    },
+    "2021": {
+      "final_gap": 8.0,
+      "best_rival": "hamilton",
+      "rounds_leading": 14,
+      "rounds": 22
+    },
+    "2022": {
+      "final_gap": 146.0,
+      "best_rival": "leclerc",
+      "rounds_leading": 17,
+      "rounds": 22
+    },
+    "2023": {
+      "final_gap": 290.0,
+      "best_rival": "perez",
+      "rounds_leading": 22,
+      "rounds": 22
+    },
+    "2024": {
+      "final_gap": 63.0,
+      "best_rival": "norris",
+      "rounds_leading": 24,
+      "rounds": 24
+    },
+    "2025": {
+      "final_gap": -2.0,
+      "best_rival": "norris",
+      "rounds_leading": 0,
+      "rounds": 24
+    },
+    "2026": {
+      "final_gap": -139.0,
+      "best_rival": "antonelli",
+      "rounds_leading": 0,
+      "rounds": 15
+    }
+  },
+  "win_margin": {
+    "n_wins": 71,
+    "median_s": 9.57,
+    "largest": {
+      "race": "2021 Styrian GP",
+      "seconds": 35.743
+    },
+    "smallest": {
+      "race": "2023 Australian GP",
+      "seconds": 0.179
+    }
+  },
+  "biggest_comeback": {
+    "race": "2021 Russian GP",
+    "grid": 20,
+    "finish": 2,
+    "gained": 18
+  },
+  "win_from_furthest_back": {
+    "race": "2024 São Paulo GP",
+    "grid": 17
+  },
+  "gap_to_fastest_qualifier_median_pct": {
+    "2015": 1.929,
+    "2016": 1.076,
+    "2017": 1.087,
+    "2018": 0.798,
+    "2019": 0.648,
+    "2020": 0.617,
+    "2021": 0.117,
+    "2022": 0.158,
+    "2023": 0.0,
+    "2024": 0.031,
+    "2025": 0.299,
+    "2026": 0.503
+  },
+  "teammates": {
+    "sainz": {
+      "first": "2015-03-15",
+      "n_quali": 21,
+      "median_gap_pct": -0.059,
+      "quali_ahead_share": 0.571,
+      "n_race": 12,
+      "race_ahead_share": 0.5
+    },
+    "ricciardo": {
+      "first": "2016-05-15",
+      "n_quali": 57,
+      "median_gap_pct": -0.05,
+      "quali_ahead_share": 0.579,
+      "n_race": 33,
+      "race_ahead_share": 0.606
+    },
+    "gasly": {
+      "first": "2019-03-17",
+      "n_quali": 11,
+      "median_gap_pct": -0.566,
+      "quali_ahead_share": 0.909,
+      "n_race": 11,
+      "race_ahead_share": 0.909
+    },
+    "albon": {
+      "first": "2019-09-01",
+      "n_quali": 25,
+      "median_gap_pct": -0.618,
+      "quali_ahead_share": 0.96,
+      "n_race": 18,
+      "race_ahead_share": 0.889
+    },
+    "perez": {
+      "first": "2021-03-28",
+      "n_quali": 88,
+      "median_gap_pct": -0.524,
+      "quali_ahead_share": 0.92,
+      "n_race": 75,
+      "race_ahead_share": 0.92
+    },
+    "lawson": {
+      "first": "2025-03-16",
+      "n_quali": 5,
+      "median_gap_pct": -0.77,
+      "quali_ahead_share": 1.0,
+      "n_race": 3,
+      "race_ahead_share": 1.0
+    },
+    "tsunoda": {
+      "first": "2025-04-06",
+      "n_quali": 20,
+      "median_gap_pct": -0.686,
+      "quali_ahead_share": 1.0,
+      "n_race": 20,
+      "race_ahead_share": 1.0
+    },
+    "hadjar": {
+      "first": "2026-03-15",
+      "n_quali": 10,
+      "median_gap_pct": -0.101,
+      "quali_ahead_share": 0.7,
+      "n_race": 8,
+      "race_ahead_share": 0.875
+    }
+  },
+  "greats": {
+    "hamilton": {
+      "name": "Lewis Hamilton",
+      "starts": 395,
+      "wins": 106,
+      "wins_after_same_starts": 83,
+      "best_50_start_window_wins": 31,
+      "best_100_start_window_wins": 55
+    },
+    "max_verstappen": {
+      "name": "Max Verstappen",
+      "starts": 248,
+      "wins": 71,
+      "wins_after_same_starts": 71,
+      "best_50_start_window_wins": 39,
+      "best_100_start_window_wins": 56
+    },
+    "michael_schumacher": {
+      "name": "Michael Schumacher",
+      "starts": 307,
+      "wins": 91,
+      "wins_after_same_starts": 91,
+      "best_50_start_window_wins": 31,
+      "best_100_start_window_wins": 54
+    },
+    "prost": {
+      "name": "Alain Prost",
+      "starts": 198,
+      "wins": 51,
+      "wins_after_same_starts": 51,
+      "best_50_start_window_wins": 18,
+      "best_100_start_window_wins": 33
+    },
+    "senna": {
+      "name": "Ayrton Senna",
+      "starts": 161,
+      "wins": 41,
+      "wins_after_same_starts": 41,
+      "best_50_start_window_wins": 23,
+      "best_100_start_window_wins": 35
+    },
+    "vettel": {
+      "name": "Sebastian Vettel",
+      "starts": 299,
+      "wins": 53,
+      "wins_after_same_starts": 53,
+      "best_50_start_window_wins": 23,
+      "best_100_start_window_wins": 39
+    }
+  },
+  "current_season": {
+    "races": 15,
+    "wins": 0,
+    "podiums": 7,
+    "not_classified": 3,
+    "championship_position": 6,
+    "last_results": [
+      "R",
+      "3",
+      "2",
+      "2"
+    ]
+  }
+}
