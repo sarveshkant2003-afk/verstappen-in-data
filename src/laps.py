@@ -6,8 +6,10 @@ session at a time; FastF1's own cache (data/cache/fastf1/) makes repeats free.
 from __future__ import annotations
 
 import logging
+import time
 
 import fastf1
+from fastf1.req import RateLimitExceededError
 import pandas as pd
 
 from src import config, stats
@@ -81,15 +83,22 @@ def build_laps_table(rounds: list[tuple[int, int]]) -> pd.DataFrame:
         out = LAPS_DIR / f"{season}_{rnd:02d}.parquet"
         if out.exists():
             continue
-        try:
-            df = race_laps(load_session(season, rnd, "R"))
-            df.insert(0, "season", season)
-            df.insert(1, "round", rnd)
-            df.to_parquet(out, index=False)
-            print(f"[{i}/{len(rounds)}] {season} R{rnd}: {len(df)} laps", flush=True)
-        except Exception as e:
-            failures.append({"season": season, "round": rnd, "error": repr(e)[:300]})
-            print(f"[{i}/{len(rounds)}] {season} R{rnd}: FAILED {e!r}", flush=True)
+        for attempt in range(8):
+            try:
+                df = race_laps(load_session(season, rnd, "R"))
+                df.insert(0, "season", season)
+                df.insert(1, "round", rnd)
+                df.to_parquet(out, index=False)
+                print(f"[{i}/{len(rounds)}] {season} R{rnd}: {len(df)} laps", flush=True)
+                break
+            except RateLimitExceededError:
+                # FastF1 caps itself at 500 API calls/hour (~9 calls per race): wait it out.
+                print(f"[{i}/{len(rounds)}] {season} R{rnd}: rate limit, sleeping 10 min", flush=True)
+                time.sleep(600)
+            except Exception as e:
+                failures.append({"season": season, "round": rnd, "error": repr(e)[:300]})
+                print(f"[{i}/{len(rounds)}] {season} R{rnd}: FAILED {e!r}", flush=True)
+                break
     pd.DataFrame(failures, columns=["season", "round", "error"]).to_csv(LAPS_DIR / "failures.csv", index=False)
     parts = [pd.read_parquet(p) for p in sorted(LAPS_DIR.glob("*.parquet"))]
     table = pd.concat(parts, ignore_index=True)
@@ -103,6 +112,7 @@ def build_laps_table(rounds: list[tuple[int, int]]) -> pd.DataFrame:
 if __name__ == "__main__":
     res = pd.read_parquet(config.PROCESSED / "results.parquet")
     gp = res[(res["session"] == "gp") & (res["season"] >= 2018)]
-    rounds = list(gp[["season", "round"]].drop_duplicates().itertuples(index=False, name=None))
+    # Newest first: the 2026 'reset' chapter needs recent seasons soonest.
+    rounds = sorted(gp[["season", "round"]].drop_duplicates().itertuples(index=False, name=None), reverse=True)
     t = build_laps_table(rounds)
     print(t.shape, "races:", t.groupby(["season", "round"]).ngroups)

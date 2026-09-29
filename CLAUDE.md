@@ -42,6 +42,13 @@ with the predictor repo, and make the difference obvious in README and website c
   - C14 lap-one gains uses FastF1 only if cheap; otherwise dropped from the Tier 2 shortlist.
 - **2026-09-29 · Environment.** Python 3.12 venv; Jolpica accessed via a small cached `requests` client in
   `src/download.py` (transparent pagination + 429 backoff) instead of `fastf1.ergast`.
+- **2026-09-29 · Scope revised (supersedes "light data scope" for laps).** Full-field race laps 2018+ ARE built
+  (`laps_2018plus.parquet`, resumable, newest season first). FastF1 self-limits to 500 calls/h (~9 calls/race),
+  so the first build takes ~3–4 h. C07 = original lap-pace dominance index; winning margin rejected in EDA.
+  C09 uses both quali gap to fastest qualifier and race-pace delta.
+- **2026-09-29 · Checkpoint answers.** Status-map REVIEW rows agreed. Poles → "fastest qualifier" everywhere.
+  C08 signature race = 2024 São Paulo GP. Max's colour = orange (#e06a14 dark / #c8570c light).
+  Website integration deferred until the charts are complete.
 - **2026-09-29 · Git.** Commit locally per milestone; create the GitHub remote and push at CHECKPOINT 1.
 
 ---
