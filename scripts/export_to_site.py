@@ -20,7 +20,7 @@ from src.charts import REGISTRY  # noqa: E402
 
 WIDTH = 1400
 # Charts used on the website write-up (projects/verstappen-in-data.html).
-ON_PAGE = ["c01", "c02", "c03", "c07", "c08", "c09", "c10"]
+ON_PAGE = ["c01", "c02", "c08", "c09", "c10"]
 
 
 def _resize(src: Path, dst: Path) -> None:
