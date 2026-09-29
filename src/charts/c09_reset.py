@@ -54,6 +54,11 @@ def build(tables: dict, mode: str = "dark") -> go.Figure:
                                              symbol=["triangle-down" if p else "circle" for p in pinned]),
                                  hovertemplate="%{customdata}: " + fmt + "<extra></extra>"), row=1, col=col)
         med = df.groupby("season").v.median()
+        if col == 3:
+            for sn in seasons:
+                if sn not in med.index:
+                    fig.add_annotation(x=sn, y=0.5, yref="y3 domain", text="no lap<br>data", showarrow=False,
+                                       font=dict(size=9.5, color=t["muted"]), row=1, col=col)
         fig.add_trace(go.Scatter(x=med.index, y=med.values, mode="markers",
                                  marker=dict(symbol="line-ew", size=26, line=dict(color=t["max"], width=3)),
                                  hovertemplate="%{x} median: " + fmt + "<extra></extra>"), row=1, col=col)

@@ -51,6 +51,10 @@ with the predictor repo, and make the difference obvious in README and website c
   Website integration deferred until the charts are complete.
   C06 duel = 2025 Japanese GP qualifying, Max vs Norris. C05 circuits chosen from data (six most-won since 2018).
   C14 built and cut (lap-1 gains mostly reflect grid slot).
+- **2026-09-29 · Lap download stopped by Sarvesh at 111/188 races.** Coverage: 2018–2020, 2024–2026 (2021: 1 race,
+  2022–2023: none). C07 shows 2021–2023 as a labelled gap and only claims things about covered races; the reign's
+  dominance is told with Jolpica-based charts (C11, C09 qualifying panel). Do not restart the bulk download
+  unless asked.
 - **2026-09-29 · Git.** Commit locally per milestone; create the GitHub remote and push at CHECKPOINT 1.
 
 ---

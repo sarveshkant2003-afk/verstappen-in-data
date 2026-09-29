@@ -9,6 +9,9 @@ Encodings: x = race number (same axis as C01, from 2018); y = his lap-matched pa
   resampled within the race); hollow = wet race (excluded from
   the line); accent line = rolling median over 10 dry races.
 Interactivity: hover → race, delta, CI, who the best other driver was, n laps.
+Coverage: lap data was downloaded for 2018–2020 and 2024–2026 only (the full
+  download was stopped by choice); 2021–2023 is drawn as a labelled gap and the
+  title only speaks about covered races.
 Caveats: the reference is the *fastest other driver that day*, a hard bar; a
   leader managing a gap, different tyre strategies and traffic all move medians.
   Clean laps exclude lap 1, pit laps, SC/VSC/red-flag laps (see stats.clean_laps).
@@ -20,6 +23,17 @@ import plotly.graph_objects as go
 
 from src import features, theme
 from src.charts.common import add_era_bands, gp_sequence, season_ticks
+
+
+def _runs(years: list[int]) -> list[tuple[int, int]]:
+    """[2021, 2022, 2023, 2025] → [(2021, 2023), (2025, 2025)]."""
+    out: list[tuple[int, int]] = []
+    for y in sorted(years):
+        if out and y == out[-1][1] + 1:
+            out[-1] = (out[-1][0], y)
+        else:
+            out.append((y, y))
+    return out
 
 
 def data(tables: dict):
@@ -35,6 +49,11 @@ def build(tables: dict, mode: str = "dark") -> go.Figure:
     gp, dom = data(tables)
     names = tables["field_results"].drop_duplicates("driver_code").set_index("driver_code")["family_name"]
     gp18 = gp[gp.season >= int(dom.season.min())]
+
+    races_by = gp18.groupby("season").size()
+    cov = dom.groupby("season").size().reindex(races_by.index, fill_value=0) / races_by
+    gaps = [int(x) for x in cov[cov < 0.5].index]
+    dom = dom[~dom.season.isin(gaps)]  # a lone race inside an uncovered season would mislead
 
     fig = go.Figure()
     add_era_bands(fig, gp18, mode)
@@ -56,24 +75,33 @@ def build(tables: dict, mode: str = "dark") -> go.Figure:
                              marker=dict(size=7, color=t["field"], line=dict(color=t["bg"], width=1))))
     fig.add_trace(go.Scatter(x=wet.i, y=wet.adv, mode="markers", customdata=cd(wet), hovertemplate=tpl + "",
                              marker=dict(size=8, color=t["bg"], line=dict(color=t["muted"], width=1.5))))
-    roll = dry.set_index("i")["adv"].rolling(10, min_periods=5, center=True).median()
-    fig.add_trace(go.Scatter(x=roll.index, y=roll.values, mode="lines", line=dict(color=t["max"], width=2.5),
-                             hoverinfo="skip"))
+    # rolling median per covered block, so the line never bridges the gap
+    block = (dry.season.isin(gaps) | (dry.season.diff().fillna(0) > 1)).cumsum()
+    for _, b in dry.groupby(block):
+        roll = b.set_index("i")["adv"].rolling(10, min_periods=5, center=True).median()
+        fig.add_trace(go.Scatter(x=roll.index, y=roll.values, mode="lines", line=dict(color=t["max"], width=2.5),
+                                 hoverinfo="skip"))
 
-    share = dry.groupby("season").adv.apply(lambda a: (a > 0).mean())
-    n_by = dry.groupby("season").size()
-    best = share.idxmax()
-    k, n = int(round(share[best] * n_by[best])), int(n_by[best])
-    title = f"His best season on race pace was {best}: fastest of all in {k} of {n} dry races"
+    # Coverage: seasons with lap data for under half their races are shown as a labelled gap, and the
+    # title only makes claims about covered races (Sarvesh chose not to download the rest, 2026-09-29).
+    for s0, s1 in _runs(gaps):
+        x0 = gp18[gp18.season == s0].i.min() - 0.5
+        x1 = gp18[gp18.season == s1].i.max() + 0.5
+        fig.add_vrect(x0=x0, x1=x1, fillcolor=t["band"], line=dict(color=t["axis"], width=1, dash="dot"),
+                      layer="below")
+        fig.add_annotation(x=(x0 + x1) / 2, y=0.5, yref="paper", showarrow=False,
+                           text=f"{s0}–{s1}: lap data<br>not downloaded" if s1 != s0 else f"{s0}: lap data<br>not downloaded",
+                           font=dict(size=11, color=t["muted"]))
+    k, n = int((dry.adv > 0).sum()), len(dry)
+    covered = sorted(int(x) for x in cov[cov >= 0.5].index)
+    title = f"In the seasons with lap data, his race pace topped the field in {k} of {n} dry races"
 
     ticks, labels = season_ticks(gp18)
     lim = float(np.nanquantile(dom.adv.abs(), 0.97)) + 0.2
     fig.update_xaxes(tickvals=ticks, ticktext=labels, showgrid=False, range=[gp18.i.min() - 1.5, gp18.i.max() + 1])
     fig.update_yaxes(range=[-lim, lim], ticksuffix=" %", title=dict(text="Max faster →", standoff=4))
-    missing = sorted(set(gp18.season) - set(dom.season))
-    note = "Lap-matched: median % difference on laps both drivers ran cleanly; reference = the driver he beat by least (≥50 % shared laps). Wet races hollow."
-    if missing:
-        note += f" Lap data still downloading for: {', '.join(map(str, missing))}."
+    note = ("Lap-matched: median % difference on laps both ran cleanly, vs the driver he beat by least. "
+            f"Seasons: {', '.join(map(str, covered))}.")
     return theme.finish(
         fig, mode, title,
         f"Race pace per Grand Prix since {int(dom.season.min())}, % of lap time (up = faster than everyone) · "
